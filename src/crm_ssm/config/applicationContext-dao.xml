@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context"
+	 xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	 xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+	 http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+	http://www.springframework.org/schema/context 
+	http://www.springframework.org/schema/context/spring-context-3.0.xsd
+	http://www.springframework.org/schema/mvc
+	http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd
+	http://www.springframework.org/schema/aop
+	 http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
+	  http://www.springframework.org/schema/tx 
+	  http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
+	http://www.springframework.org/schema/util 
+	http://www.springframework.org/schema/util/spring-util-3.0.xsd">
+	
+	
+	<!-- 第一步：数据源 -->
+	 <!-- 扫描资源文件 -->
+	   <context:property-placeholder location="classpath:jdbc.properties"/>
+	   <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource">
+	   		<property name="driverClassName" value="${jdbc.driver}"></property>
+	   		<property name="url" value="${jdbc.url}"></property>
+	   		<property name="username" value="${jdbc.username}"></property>
+	   		<property name="password" value="${jdbc.password}"></property>
+	   </bean>
+	<!-- 第二步：配置sqlSessionFactoty，生产sqlSession回话 -->
+	 <!-- 第二步：创建工厂 -->
+	   <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+	   		<property name="dataSource" ref="dataSource"></property>
+	   		<!-- 加载配置文件 -->
+	   		<property name="configLocation" value="classpath:sqlMapConfig.xml"></property>
+	   		<!-- 配置别名 -->
+	   		<property name="typeAliasesPackage" value="cn.itcast.domain,cn.itcast.vo"></property>
+	   </bean>
+		<!-- 配置mybatis接口代理扫描
+			* namespace必须是接口全类路径名
+			* 映射文件sql语句字段的id必须和接口方法名一致
+			*　映射文件必须和接口在同一个目录下面，且名称相同。	
+		 -->
+		<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+			<property name="basePackage" value="cn.itcast.mapper"></property>
+			<property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"></property>
+		</bean>
+</beans>
